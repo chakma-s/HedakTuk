@@ -1,0 +1,91 @@
+# HedakTuk App - MVP Launch Plan
+
+For an MVP launch, the priority order is:
+
+## 1. Customer App (UI & UX)
+Without this, there's no business.
+- [x] Expo Setup & Configuration
+- [x] Navigation Structure (Tabs & Stack)
+- [x] Global Theme & Styling (dark/light mode with Zustand)
+- [x] Home Screen (`index.tsx`) — connected to real API
+- [x] Restaurant Screen (`[id].tsx`) — connected to real API
+- [x] Search Screen (`search.tsx`) — UI done, uses mock data
+- [x] Menu & Cart Management (`cart.tsx`, `cartStore.ts`) — local Zustand only
+- [x] Orders History (`orders.tsx`) — UI done, uses hardcoded mock data
+- [x] Profile Screen (`profile.tsx`) — UI done, fully static
+- [x] Checkout & Payments UI (`checkout.tsx`) — UI done, API call built (has a bug: `cartStore` not imported)
+- [x] Live Order Tracking (`track/[id].tsx`) — UI done, simulates with setTimeout
+
+## 2. Customer App (API Integration)
+- [ ] Build Auth Screens (Phone OTP flow with Glassmorphism UI)
+- [ ] Token Storage with `expo-secure-store`
+- [ ] Connect Search to API (`/restaurants?search=...`) — currently uses local mockRestaurants
+- [ ] Connect Orders History to API (`/orders`) — currently uses MOCK_ORDERS
+- [ ] Connect Order Tracking to WebSocket (real-time status updates)
+- [ ] Fix checkout.tsx bug (line 39: `cartStore.restaurantId` not imported from hook)
+- [ ] Connect Cart to Backend API (`/cart`) — or keep Zustand local for MVP
+- [ ] Connect Profile to `/users/me`
+- [ ] Integrate Real Payment Gateway (Razorpay SDK)
+
+## 3. Restaurant Panel (Web/Admin)
+Restaurants need to accept orders.
+- [x] Next.js Setup + TailwindCSS + Dark Mode
+- [x] Dashboard (Live Orders Queue) — connected to real API, polls every 5s
+- [ ] Menu Editor — UI built but uses hardcoded `INITIAL_MENU`, not connected to API
+- [ ] Analytics & Earnings — UI built but uses static placeholder data
+- [ ] Add `x-user-role: RESTAURANT_OWNER` header to API client
+- [ ] WebSocket integration (replace polling with real-time order notifications)
+
+## 4. Delivery Partner App
+Can start with self-delivery or manual dispatch.
+- [x] Basic Expo App for Partners (dashboard, order request, active trip screens)
+- [x] Go Online/Offline toggle
+- [x] Pending orders polling from API (`/orders/delivery/pending`)
+- [x] Active Trip — updates order status via API (`PATCH /orders/:id/status`)
+- [ ] Accept Order API call (currently local state only, no `deliveryPartnerId` assignment)
+- [ ] Add `x-user-role: DELIVERY_PARTNER` header to API client
+- [ ] Auth screens for delivery partners
+- [ ] Real live location tracking via WebSocket (currently placeholder)
+- [ ] Earnings fetched from API (currently Zustand local state)
+
+## 5. Super Admin Panel
+Can manage via database/API directly initially.
+- [x] Next.js Setup + TailwindCSS + Dark Mode + Sidebar Layout
+- [x] Dashboard — connected to real API (`/orders/admin/stats`)
+- [x] Restaurants listing page — partially connected (lists, no edit/delete)
+- [x] Users listing page — partially connected (lists, no actions)
+- [ ] Add `x-user-role: ADMIN` header to API client
+- [ ] Restaurant CRUD (approve/suspend/edit)
+- [ ] User management actions (deactivate, change roles)
+- [ ] Revenue chart (integrate Recharts with time-series data)
+- [ ] Payout management (no backend or frontend yet)
+
+## 6. Backend API (NestJS)
+- [x] Auth module (OTP + email/password + JWT refresh)
+- [x] Users module (profile, addresses)
+- [x] Restaurants module (CRUD, search, filters)
+- [x] Menu module (categories + items CRUD)
+- [x] Cart module (add/remove/clear)
+- [x] Orders module (place, track, cancel, restaurant orders, delivery pending)
+- [x] WebSocket gateway for order status updates
+- [x] Prisma schema with PostGIS, indexes, relations
+- [x] Redis for OTP, rate limiting
+- [x] Swagger API docs at `/api/docs`
+- [x] Health check endpoints (`/health`, `/health/ready`)
+- [x] Global rate limiting (60 req/min/IP)
+- [x] Global exception filter
+- [x] Role-based access control (RBAC) on all endpoints
+- [ ] Payment gateway integration (Razorpay — currently stub)
+- [ ] SMS provider (MSG91/Twilio — OTP currently logs to console)
+- [ ] Push notifications (Firebase — currently logs to console)
+- [ ] Email notifications (Nodemailer — currently logs to console)
+- [ ] PostGIS geospatial queries ("near me" by lat/lng + radius)
+- [ ] BullMQ async workers (notification dispatch, delivery matching)
+- [ ] File uploads (S3/R2 for restaurant/menu images)
+- [ ] Delivery partner assignment algorithm
+
+## 7. Pre-Launch Fixes
+- [ ] Fix port mismatch: all frontends expect port 3333, API defaults to 3000
+- [ ] Float → Int (paise) migration for all monetary fields
+- [ ] WebSocket authentication (currently open to anyone)
+- [ ] Redis caching layer for restaurant/menu data

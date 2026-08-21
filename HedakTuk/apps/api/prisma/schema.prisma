@@ -1,0 +1,287 @@
+// Prisma Schema — HedakTuk App
+// Uses PostGIS for geospatial queries
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---- Users ----
+
+enum UserRole {
+  CUSTOMER
+  RESTAURANT_OWNER
+  DELIVERY_PARTNER
+  ADMIN
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String    @db.VarChar(100)
+  email        String?   @unique @db.VarChar(255)
+  phone        String    @unique @db.VarChar(15)
+  passwordHash String?   @map("password_hash") @db.VarChar(255)
+  avatarUrl    String?   @map("avatar_url") @db.VarChar(500)
+  role         UserRole  @default(CUSTOMER)
+  isActive     Boolean   @default(true) @map("is_active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  addresses         Address[]
+  orders            Order[]
+  deliveryOrders    Order[]      @relation("DeliveryPartner")
+  reviews           Review[]
+  restaurants       Restaurant[]
+  cart              Cart?
+
+  @@map("users")
+}
+
+model Address {
+  id          String  @id @default(uuid()) @db.Uuid
+  userId      String  @map("user_id") @db.Uuid
+  label       String  @db.VarChar(50) // Home, Work, Other
+  fullAddress String  @map("full_address") @db.VarChar(500)
+  landmark    String? @db.VarChar(200)
+  latitude    Float
+  longitude   Float
+  isDefault   Boolean @default(false) @map("is_default")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+// ---- Restaurants ----
+
+model Restaurant {
+  id                     String  @id @default(uuid()) @db.Uuid
+  ownerId                String  @map("owner_id") @db.Uuid
+  name                   String  @db.VarChar(200)
+  description            String? @db.Text
+  coverImageUrl          String? @map("cover_image_url") @db.VarChar(500)
+  logoUrl                String? @map("logo_url") @db.VarChar(500)
+  address                String  @db.VarChar(500)
+  latitude               Float
+  longitude              Float
+  rating                 Float   @default(0)
+  totalRatings           Int     @default(0) @map("total_ratings")
+  cuisines               String[]
+  avgDeliveryTimeMinutes Int     @default(30) @map("avg_delivery_time_minutes")
+  minOrderAmount         Float   @default(0) @map("min_order_amount")
+  deliveryFee            Float   @default(0) @map("delivery_fee")
+  isActive               Boolean @default(true) @map("is_active")
+  isOpen                 Boolean @default(true) @map("is_open")
+  operatingHours         Json?   @map("operating_hours")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  owner      User           @relation(fields: [ownerId], references: [id])
+  categories MenuCategory[]
+  menuItems  MenuItem[]
+  orders     Order[]
+  reviews    Review[]
+
+  @@index([isActive, isOpen])
+  @@map("restaurants")
+}
+
+// ---- Menu ----
+
+model MenuCategory {
+  id           String @id @default(uuid()) @db.Uuid
+  restaurantId String @map("restaurant_id") @db.Uuid
+  name         String @db.VarChar(100)
+  sortOrder    Int    @default(0) @map("sort_order")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  items      MenuItem[]
+
+  @@map("menu_categories")
+}
+
+model MenuItem {
+  id                     String  @id @default(uuid()) @db.Uuid
+  restaurantId           String  @map("restaurant_id") @db.Uuid
+  categoryId             String  @map("category_id") @db.Uuid
+  name                   String  @db.VarChar(200)
+  description            String? @db.Text
+  price                  Float
+  imageUrl               String? @map("image_url") @db.VarChar(500)
+  isVeg                  Boolean @default(false) @map("is_veg")
+  isAvailable            Boolean @default(true) @map("is_available")
+  preparationTimeMinutes Int     @default(15) @map("preparation_time_minutes")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  restaurant Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  category   MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@index([restaurantId, isAvailable])
+  @@map("menu_items")
+}
+
+// ---- Cart ----
+
+model Cart {
+  id           String @id @default(uuid()) @db.Uuid
+  userId       String @unique @map("user_id") @db.Uuid
+  restaurantId String? @map("restaurant_id") @db.Uuid
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id         String @id @default(uuid()) @db.Uuid
+  cartId     String @map("cart_id") @db.Uuid
+  menuItemId String @map("menu_item_id") @db.Uuid
+  quantity   Int    @default(1)
+
+  cart     Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@unique([cartId, menuItemId])
+  @@map("cart_items")
+}
+
+// ---- Orders ----
+
+enum OrderStatus {
+  PLACED
+  CONFIRMED
+  PREPARING
+  READY
+  PICKED_UP
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+model Order {
+  id                  String      @id @default(uuid()) @db.Uuid
+  userId              String      @map("user_id") @db.Uuid
+  restaurantId        String      @map("restaurant_id") @db.Uuid
+  deliveryPartnerId   String?     @map("delivery_partner_id") @db.Uuid
+  status              OrderStatus @default(PLACED)
+  subtotal            Float
+  deliveryFee         Float       @default(0) @map("delivery_fee")
+  discount            Float       @default(0)
+  total               Float
+  couponCode          String?     @map("coupon_code") @db.VarChar(50)
+  deliveryAddress     Json        @map("delivery_address")
+  specialInstructions String?     @map("special_instructions") @db.Text
+  estimatedDeliveryMinutes Int?   @map("estimated_delivery_minutes")
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @updatedAt @map("updated_at")
+  deliveredAt         DateTime?   @map("delivered_at")
+
+  user            User        @relation(fields: [userId], references: [id])
+  restaurant      Restaurant  @relation(fields: [restaurantId], references: [id])
+  deliveryPartner User?       @relation("DeliveryPartner", fields: [deliveryPartnerId], references: [id], onDelete: SetNull)
+  items           OrderItem[]
+  payment         Payment?
+  review          Review?
+
+  @@index([userId])
+  @@index([restaurantId])
+  @@index([deliveryPartnerId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String @id @default(uuid()) @db.Uuid
+  orderId    String @map("order_id") @db.Uuid
+  menuItemId String @map("menu_item_id") @db.Uuid
+  name       String @db.VarChar(200)
+  quantity   Int
+  unitPrice  Float  @map("unit_price")
+  totalPrice Float  @map("total_price")
+  isVeg      Boolean @default(false) @map("is_veg")
+
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@map("order_items")
+}
+
+// ---- Payments ----
+
+enum PaymentMethod {
+  UPI
+  CARD
+  WALLET
+  NET_BANKING
+  COD
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id                   String        @id @default(uuid()) @db.Uuid
+  orderId              String        @unique @map("order_id") @db.Uuid
+  method               PaymentMethod
+  status               PaymentStatus @default(PENDING)
+  amount               Float
+  gatewayTransactionId String?       @map("gateway_transaction_id") @db.VarChar(255)
+  createdAt            DateTime      @default(now()) @map("created_at")
+  updatedAt            DateTime      @updatedAt @map("updated_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
+}
+
+// ---- Coupons ----
+
+model Coupon {
+  id             String   @id @default(uuid()) @db.Uuid
+  code           String   @unique @db.VarChar(50)
+  description    String   @db.VarChar(500)
+  discountType   String   @map("discount_type") @db.VarChar(20) // PERCENTAGE or FLAT
+  discountValue  Float    @map("discount_value")
+  minOrderAmount Float    @default(0) @map("min_order_amount")
+  maxDiscount    Float?   @map("max_discount")
+  usageLimit     Int?     @map("usage_limit")
+  usedCount      Int      @default(0) @map("used_count")
+  validFrom      DateTime @map("valid_from")
+  validUntil     DateTime @map("valid_until")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("coupons")
+}
+
+// ---- Reviews ----
+
+model Review {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  restaurantId String   @map("restaurant_id") @db.Uuid
+  orderId      String   @unique @map("order_id") @db.Uuid
+  rating       Int      // 1-5
+  comment      String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user       User       @relation(fields: [userId], references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  order      Order      @relation(fields: [orderId], references: [id])
+
+  @@index([restaurantId])
+  @@map("reviews")
+}

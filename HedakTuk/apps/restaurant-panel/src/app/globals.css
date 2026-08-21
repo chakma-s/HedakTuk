@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #FFFFFF;
+  --surface: #F5F5F7;
+  --surface-alt: #EBEBF0;
+  --foreground: #0A0A0F;
+  --foreground-muted: #5A5A6E;
+  
+  --primary: #FF8008;
+  --primary-foreground: #FFFFFF;
+  
+  --border: rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  --background: #0A0A0F;
+  --surface: #14141F;
+  --surface-alt: #1A1A2E;
+  --foreground: #F0F0F5;
+  --foreground-muted: #8E8EA0;
+  
+  --primary: #FF8008;
+  --primary-foreground: #FFFFFF;
+  
+  --border: rgba(255, 255, 255, 0.06);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  
+  --color-foreground: var(--foreground);
+  --color-muted: var(--foreground-muted);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-border: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
