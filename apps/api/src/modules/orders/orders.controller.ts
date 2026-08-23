@@ -79,6 +79,13 @@ export class OrdersController {
         return this.ordersService.updateStatus(id, body.status as any);
     }
 
+    @Patch(':id/accept')
+    @Roles(UserRole.DELIVERY_PARTNER, UserRole.ADMIN)
+    @ApiOperation({ summary: 'Accept delivery request (delivery partner)' })
+    acceptDeliveryOrder(@Req() req: any, @Param('id') id: string) {
+        return this.ordersService.acceptDeliveryOrder(id, req.user.id);
+    }
+
     @Post(':id/cancel')
     @Roles(UserRole.CUSTOMER, UserRole.ADMIN)
     @ApiOperation({ summary: 'Cancel an order' })

@@ -193,9 +193,48 @@ export class OrdersService {
         return { data, total, page: Number(page), limit: Number(limit) };
     }
 
+    async acceptDeliveryOrder(orderId: string, deliveryPartnerId: string) {
+        const order = await this.prisma.order.findUnique({
+            where: { id: orderId },
+            include: { restaurant: true, user: true },
+        });
+
+        if (!order) {
+            throw new NotFoundException('Order not found');
+        }
+
+        if (order.deliveryPartnerId && order.deliveryPartnerId !== deliveryPartnerId) {
+            throw new BadRequestException('Order has already been accepted by another delivery partner');
+        }
+
+        if (['DELIVERED', 'CANCELLED'].includes(order.status)) {
+            throw new BadRequestException(`Order cannot be accepted in ${order.status} state`);
+        }
+
+        const updatedOrder = await this.prisma.order.update({
+            where: { id: orderId },
+            data: {
+                deliveryPartnerId,
+            },
+            include: {
+                items: true,
+                restaurant: { select: { id: true, name: true, address: true, latitude: true, longitude: true } },
+                user: { select: { id: true, name: true, phone: true } },
+            },
+        });
+
+        // Notify customer and restaurant that a delivery partner was assigned
+        this.ordersGateway.notifyOrderStatusUpdate(orderId, updatedOrder.status);
+
+        return updatedOrder;
+    }
+
     async getPendingDeliveries(page = 1, limit = 10) {
         const skip = (page - 1) * limit;
-        const where = { status: 'READY' as any }; // Delivery partners see READY orders
+        const where = {
+            deliveryPartnerId: null,
+            status: { in: ['CONFIRMED', 'PREPARING', 'READY'] as any },
+        };
 
         const [data, total] = await Promise.all([
             this.prisma.order.findMany({

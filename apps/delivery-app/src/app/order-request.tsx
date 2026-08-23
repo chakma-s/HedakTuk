@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Animated, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/stores/themeStore';
 import { useDeliveryStore } from '@/stores/deliveryStore';
 import { Ionicons } from '@expo/vector-icons';
+import { fetchAPI } from '@/api';
 
 export default function OrderRequestScreen() {
   const Colors = useTheme();
@@ -11,6 +12,7 @@ export default function OrderRequestScreen() {
   const router = useRouter();
   const { activeOrder, setActiveOrder } = useDeliveryStore();
   const [progress] = useState(new Animated.Value(100));
+  const [isAccepting, setIsAccepting] = useState(false);
 
   useEffect(() => {
     // 15 second timer to accept
@@ -23,10 +25,22 @@ export default function OrderRequestScreen() {
     });
   }, []);
 
-  const acceptOrder = () => {
-    if (activeOrder) {
+  const acceptOrder = async () => {
+    if (!activeOrder) return;
+    setIsAccepting(true);
+    try {
+      await fetchAPI(`/orders/${activeOrder.id}/accept`, {
+        method: 'PATCH',
+      });
       setActiveOrder({ ...activeOrder, status: 'going_to_pickup' });
       router.replace('/active-trip');
+    } catch (err: any) {
+      console.error('Failed to accept order:', err);
+      Alert.alert('Order Unavailable', err.message || 'This order is no longer available.');
+      setActiveOrder(null);
+      router.replace('/');
+    } finally {
+      setIsAccepting(false);
     }
   };
 
@@ -74,11 +88,19 @@ export default function OrderRequestScreen() {
           <Animated.View style={[styles.timerBar, { width: progress.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] }) }]} />
         </View>
         <View style={styles.btnRow}>
-          <TouchableOpacity style={styles.rejectBtn} onPress={rejectOrder}>
+          <TouchableOpacity style={styles.rejectBtn} onPress={rejectOrder} disabled={isAccepting}>
             <Text style={styles.rejectText}>REJECT</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.acceptBtn} onPress={acceptOrder}>
-            <Text style={styles.acceptText}>ACCEPT</Text>
+          <TouchableOpacity 
+            style={[styles.acceptBtn, isAccepting && { opacity: 0.7 }]} 
+            onPress={acceptOrder}
+            disabled={isAccepting}
+          >
+            {isAccepting ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.acceptText}>ACCEPT</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>

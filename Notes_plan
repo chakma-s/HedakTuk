@@ -13,15 +13,15 @@ Track the end-to-end development of the HedakTuk full-stack food delivery ecosys
 
 ---
 
-## 📦 Phase 1: Core Order Loop & Delivery Acceptance (IN PROGRESS)
-- [ ] Implement `PATCH /orders/:id/accept` endpoint in NestJS Backend API
-- [ ] Connect "Accept Delivery" button in Delivery Partner App (`order-request.tsx`) to backend API
-- [ ] Ensure seamless active trip state progression (`PICKED_UP` ➔ `OUT_FOR_DELIVERY` ➔ `DELIVERED`)
-- [ ] Verify atomic assignment of `deliveryPartnerId` on orders
+## 📦 Phase 1: Core Order Loop & Delivery Acceptance (COMPLETED)
+- [x] Implement `PATCH /orders/:id/accept` endpoint in NestJS Backend API
+- [x] Connect "Accept Delivery" button in Delivery Partner App (`order-request.tsx`) to backend API
+- [x] Ensure seamless active trip state progression (`PICKED_UP` ➔ `OUT_FOR_DELIVERY` ➔ `DELIVERED`)
+- [x] Verify atomic assignment of `deliveryPartnerId` on orders
 
 ---
 
-## 🍽️ Phase 2: Restaurant Menu Management & Live Orders
+## 🍽️ Phase 2: Restaurant Menu Management & Live Orders (IN PROGRESS)
 - [ ] Build "Add New Dish" modal in Restaurant Panel (`menu/page.tsx`)
 - [ ] Build "Edit Dish" and "Delete Dish" handlers with backend API integration
 - [ ] Build Category selector and management (Starters, Mains, Desserts, Beverages)

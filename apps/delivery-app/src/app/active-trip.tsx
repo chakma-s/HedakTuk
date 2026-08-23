@@ -11,12 +11,19 @@ export default function ActiveTripScreen() {
   const styles = createStyles(Colors);
   const router = useRouter();
   const { activeOrder, setActiveOrder, completeOrder } = useDeliveryStore();
+  const [isUpdating, setIsUpdating] = React.useState(false);
 
   if (!activeOrder) return null;
 
   const handleNextStep = async () => {
+    if (isUpdating) return;
+    setIsUpdating(true);
     try {
       if (activeOrder.status === 'going_to_pickup') {
+        await fetchAPI(`/orders/${activeOrder.id}/status`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'PICKED_UP' })
+        });
         setActiveOrder({ ...activeOrder, status: 'picked_up' });
       } else if (activeOrder.status === 'picked_up') {
         await fetchAPI(`/orders/${activeOrder.id}/status`, {
@@ -32,8 +39,11 @@ export default function ActiveTripScreen() {
         completeOrder();
         router.replace('/');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to update status', err);
+      alert(err.message || 'Failed to update order status');
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -118,11 +128,16 @@ export default function ActiveTripScreen() {
 
         <View style={styles.actionFooter}>
           <TouchableOpacity 
-            style={[styles.actionBtn, activeOrder.status === 'going_to_dropoff' && { backgroundColor: Colors.success }]} 
+            style={[
+              styles.actionBtn, 
+              activeOrder.status === 'going_to_dropoff' && { backgroundColor: Colors.success },
+              isUpdating && { opacity: 0.7 }
+            ]} 
             onPress={handleNextStep}
+            disabled={isUpdating}
           >
             <Text style={styles.actionBtnText}>
-              {getActionText()}
+              {isUpdating ? 'UPDATING...' : getActionText()}
             </Text>
             <Ionicons name="arrow-forward" size={20} color={Colors.white} />
           </TouchableOpacity>
