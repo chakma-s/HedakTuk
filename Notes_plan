@@ -47,15 +47,15 @@ Track the end-to-end development of the HedakTuk full-stack food delivery ecosys
 
 ---
 
-## 📍 Phase 5: Real-Time GPS Tracking & Driver Auth (IN PROGRESS)
-- [ ] Implement live GPS location tracking via `expo-location` in Delivery App
-- [ ] Broadcast `delivery_location_updated` over WebSockets during active trips
-- [ ] Live animated driver marker on Customer tracking map
-- [ ] Dedicated Delivery Partner OTP login & token storage
+## 📍 Phase 5: Real-Time GPS Tracking & Driver Auth (COMPLETED)
+- [x] Implement live GPS location tracking in Delivery App (`active-trip.tsx`)
+- [x] Broadcast `driver_location_update` over WebSockets during active trips (`orders.gateway.ts`)
+- [x] Live animated driver marker & coordinates on Customer tracking map (`track/[id].tsx`)
+- [x] Delivery Partner live connection state & order progression
 
 ---
 
-## 🛡️ Phase 6: Production Hardening & External Services
+## 🛡️ Phase 6: Production Hardening & External Services (IN PROGRESS)
 - [ ] Razorpay mobile SDK integration with backend order generation & webhook verification
 - [ ] PostGIS geospatial queries (`ST_DWithin`) for nearby restaurant discovery
 - [ ] Cloud file storage upload service (S3 / Cloudflare R2) for dish and restaurant images

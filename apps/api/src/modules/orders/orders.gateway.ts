@@ -35,6 +35,20 @@ export class OrdersGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.leave(`order:${orderId}`);
     }
 
+    @SubscribeMessage('driver_location_update')
+    handleDriverLocationUpdate(
+        client: Socket,
+        data: { orderId: string; latitude: number; longitude: number; heading?: number },
+    ) {
+        this.server.to(`order:${data.orderId}`).emit(SocketEvent.DELIVERY_LOCATION_UPDATED, {
+            orderId: data.orderId,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            heading: data.heading,
+            updatedAt: new Date().toISOString(),
+        });
+    }
+
     // ---- Emit Methods (called by OrdersService) ----
 
     notifyOrderStatusUpdate(orderId: string, status: OrderStatus) {

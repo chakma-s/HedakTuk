@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/stores/themeStore';
 import { useDeliveryStore, RiderStatus, DeliveryOrder } from '@/stores/deliveryStore';
 import { Ionicons } from '@expo/vector-icons';
-import { fetchAPI } from '@/api';
+import { fetchAPI, API_URL } from '@/api';
+import { io, Socket } from 'socket.io-client';
 
 export default function ActiveTripScreen() {
   const Colors = useTheme();
@@ -12,6 +13,45 @@ export default function ActiveTripScreen() {
   const router = useRouter();
   const { activeOrder, setActiveOrder, completeOrder } = useDeliveryStore();
   const [isUpdating, setIsUpdating] = React.useState(false);
+  const socketRef = useRef<Socket | null>(null);
+
+  // Real-time GPS Location Broadcasting
+  useEffect(() => {
+    if (!activeOrder?.id) return;
+
+    const socket = io(`${API_URL}/orders`, {
+      transports: ['websocket'],
+    });
+    socketRef.current = socket;
+
+    socket.on('connect', () => {
+      socket.emit('join_order_room', activeOrder.id);
+    });
+
+    let currentLat = 12.9716;
+    let currentLng = 77.5946;
+
+    // Simulate real GPS location updates moving along the route every 3s
+    const locationInterval = setInterval(() => {
+      currentLat += (Math.random() - 0.5) * 0.001;
+      currentLng += (Math.random() - 0.5) * 0.001;
+
+      socket.emit('driver_location_update', {
+        orderId: activeOrder.id,
+        latitude: currentLat,
+        longitude: currentLng,
+        heading: 90,
+      });
+    }, 3000);
+
+    return () => {
+      clearInterval(locationInterval);
+      if (socketRef.current) {
+        socketRef.current.emit('leave_order_room', activeOrder.id);
+        socketRef.current.disconnect();
+      }
+    };
+  }, [activeOrder?.id]);
 
   if (!activeOrder) return null;
 

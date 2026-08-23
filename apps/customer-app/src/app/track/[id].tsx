@@ -20,6 +20,7 @@ export default function OrderTrackingScreen() {
   const [order, setOrder] = useState<any>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [driverLocation, setDriverLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   // Fetch initial order details
   useEffect(() => {
@@ -64,6 +65,12 @@ export default function OrderTrackingScreen() {
       }
     });
 
+    socket.on('delivery_location_updated', (data: { orderId: string; latitude: number; longitude: number }) => {
+      if (data.orderId === id) {
+        setDriverLocation({ latitude: data.latitude, longitude: data.longitude });
+      }
+    });
+
     socket.on('disconnect', () => {
       console.log('Disconnected from order tracking WS');
     });
@@ -88,18 +95,34 @@ export default function OrderTrackingScreen() {
         <TouchableOpacity onPress={() => router.push('/(tabs)')}>
           <Ionicons name="close" size={24} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Order #{id}</Text>
+        <Text style={styles.headerTitle}>Order #{id?.slice(0, 8)}</Text>
         <TouchableOpacity>
           <Text style={styles.helpText}>Help</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Map Placeholder */}
+        {/* Map / GPS View */}
         <View style={styles.mapContainer}>
           <View style={styles.mapOverlay} />
-          <Ionicons name="map-outline" size={48} color={Colors.textTertiary} />
-          <Text style={styles.mapText}>Live Tracking Map</Text>
+          
+          {driverLocation ? (
+            <View style={styles.gpsMarkerContainer}>
+              <View style={styles.gpsPulseRing} />
+              <View style={styles.gpsCenterDot}>
+                <Ionicons name="bicycle" size={20} color="#fff" />
+              </View>
+              <Text style={styles.gpsCoordsText}>
+                Live GPS: {driverLocation.latitude.toFixed(4)}, {driverLocation.longitude.toFixed(4)}
+              </Text>
+            </View>
+          ) : (
+            <>
+              <Ionicons name="map-outline" size={48} color={Colors.textTertiary} />
+              <Text style={styles.mapText}>Live Tracking Map</Text>
+            </>
+          )}
+
           {currentStep >= 4 && currentStep < 5 && (
             <View style={styles.deliveryBadge}>
               <Text style={styles.deliveryBadgeText}>Arriving in 15 mins</Text>
@@ -298,6 +321,35 @@ const createStyles = (Colors: any) => StyleSheet.create({
   },
   mapOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.2)' },
   mapText: { color: Colors.textSecondary, marginTop: Spacing.sm },
+  gpsMarkerContainer: { alignItems: 'center', justifyContent: 'center', zIndex: 5 },
+  gpsPulseRing: {
+    position: 'absolute',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: Colors.primary + '30',
+  },
+  gpsCenterDot: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Shadows.card,
+  },
+  gpsCoordsText: {
+    marginTop: 10,
+    fontSize: FontSize.xs,
+    fontWeight: FontWeight.bold,
+    color: Colors.text,
+    backgroundColor: Colors.surface,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
   deliveryBadge: {
     position: 'absolute', bottom: Spacing.lg,
     backgroundColor: Colors.warning, paddingHorizontal: Spacing.lg, paddingVertical: 8,
