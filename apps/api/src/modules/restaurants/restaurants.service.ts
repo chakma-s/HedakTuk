@@ -87,4 +87,46 @@ export class RestaurantsService {
             data: { isOpen },
         });
     }
+
+    // ---- Admin Operations ----
+
+    async findAllAdmin(params: { search?: string; page?: number; limit?: number }) {
+        const { page = 1, limit = 20, search } = params;
+        const skip = (page - 1) * limit;
+
+        const where: any = {};
+
+        if (search) {
+            where.OR = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { address: { contains: search, mode: 'insensitive' } },
+            ];
+        }
+
+        const [restaurants, total] = await Promise.all([
+            this.prisma.restaurant.findMany({
+                where,
+                skip,
+                take: Number(limit),
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    owner: { select: { id: true, name: true, phone: true, email: true } },
+                    _count: { select: { orders: true, menuItems: true } },
+                },
+            }),
+            this.prisma.restaurant.count({ where }),
+        ]);
+
+        return {
+            data: restaurants,
+            meta: { total, page: Number(page), limit: Number(limit), totalPages: Math.ceil(total / Number(limit)) },
+        };
+    }
+
+    async updateStatus(id: string, isActive: boolean) {
+        return this.prisma.restaurant.update({
+            where: { id },
+            data: { isActive },
+        });
+    }
 }

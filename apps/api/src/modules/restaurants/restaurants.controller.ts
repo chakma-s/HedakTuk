@@ -44,4 +44,22 @@ export class RestaurantsController {
     update(@Req() req: any, @Param('id') id: string, @Body() body: any) {
         return this.restaurantsService.update(id, req.user.id, body);
     }
+
+    // ---- Admin Endpoints ----
+
+    @Get('admin/all')
+    @ApiOperation({ summary: 'Get all restaurants for admin' })
+    findAllAdmin(
+        @Query('search') search?: string,
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+    ) {
+        return this.restaurantsService.findAllAdmin({ search, page, limit });
+    }
+
+    @Patch(':id/status')
+    @ApiOperation({ summary: 'Update restaurant status (Admin)' })
+    updateStatus(@Param('id') id: string, @Body() body: { isActive: boolean }) {
+        return this.restaurantsService.updateStatus(id, body.isActive);
+    }
 }

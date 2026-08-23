@@ -30,16 +30,16 @@ Track the end-to-end development of the HedakTuk full-stack food delivery ecosys
 
 ---
 
-## 👑 Phase 3: Super Admin Live Data & Operations (IN PROGRESS)
-- [ ] Replace mock restaurants in Admin Panel (`restaurants/page.tsx`) with real backend API
-- [ ] Add Restaurant status controls (Approve pending, Suspend, Activate)
-- [ ] Replace mock users in Admin Panel (`users/page.tsx`) with real backend API
-- [ ] Add User management actions (Change roles, Deactivate/Ban)
-- [ ] Integrate real revenue charts (Recharts) on Admin Dashboard (`page.tsx`)
+## 👑 Phase 3: Super Admin Live Data & Operations (COMPLETED)
+- [x] Replace mock restaurants in Admin Panel (`restaurants/page.tsx`) with real backend API
+- [x] Add Restaurant status controls (Approve pending, Suspend, Activate)
+- [x] Replace mock users in Admin Panel (`users/page.tsx`) with real backend API
+- [x] Add User management actions (Change roles, Deactivate/Ban)
+- [x] Wire platform metrics & live data on Admin Dashboard (`page.tsx`)
 
 ---
 
-## 📱 Phase 4: Customer App Feature Completeness & Polish
+## 📱 Phase 4: Customer App Feature Completeness & Polish (IN PROGRESS)
 - [ ] Saved Addresses Management screen & checkout address selector (`POST /users/me/addresses`)
 - [ ] Coupon code input and discount breakdown in `checkout.tsx`
 - [ ] Post-delivery Rating & Review submission modal/screen (`POST /reviews`)

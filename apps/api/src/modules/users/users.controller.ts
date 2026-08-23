@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Post, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Delete, Body, Param, Query, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
@@ -38,5 +38,30 @@ export class UsersController {
     @ApiOperation({ summary: 'Delete an address' })
     deleteAddress(@Req() req: any, @Param('id') id: string) {
         return this.usersService.deleteAddress(req.user.id, id);
+    }
+
+    // ---- Admin Endpoints ----
+
+    @Get()
+    @ApiOperation({ summary: 'Get all users (Admin)' })
+    getAllUsers(
+        @Query('search') search?: string,
+        @Query('role') role?: string,
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+    ) {
+        return this.usersService.getAllUsers({ search, role, page, limit });
+    }
+
+    @Patch(':id/role')
+    @ApiOperation({ summary: 'Update user role (Admin)' })
+    updateUserRole(@Param('id') id: string, @Body() body: { role: string }) {
+        return this.usersService.updateUserRole(id, body.role);
+    }
+
+    @Patch(':id/status')
+    @ApiOperation({ summary: 'Toggle user active status (Admin)' })
+    updateUserStatus(@Param('id') id: string, @Body() body: { isActive: boolean }) {
+        return this.usersService.updateUserStatus(id, body.isActive);
     }
 }
