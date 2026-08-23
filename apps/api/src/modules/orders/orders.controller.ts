@@ -92,4 +92,11 @@ export class OrdersController {
     cancelOrder(@Req() req: any, @Param('id') id: string) {
         return this.ordersService.cancelOrder(id, req.user.id);
     }
+
+    @Post(':id/review')
+    @Roles(UserRole.CUSTOMER, UserRole.ADMIN)
+    @ApiOperation({ summary: 'Submit rating and review for delivered order' })
+    addReview(@Req() req: any, @Param('id') id: string, @Body() body: { rating: number; comment?: string }) {
+        return this.ordersService.addReview(id, req.user.id, body);
+    }
 }

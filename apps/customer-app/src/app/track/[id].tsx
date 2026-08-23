@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, TextInput } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -148,8 +148,10 @@ export default function OrderTrackingScreen() {
               <Ionicons name="person" size={24} color={Colors.white} />
             </View>
             <View style={styles.partnerInfo}>
-              <Text style={styles.partnerName}>Ramesh Kumar</Text>
-              <Text style={styles.partnerDetails}>KA 01 AB 1234 • 4.8 ★</Text>
+              <Text style={styles.partnerName}>{order?.deliveryPartner?.name || 'Delivery Partner'}</Text>
+              <Text style={styles.partnerDetails}>
+                {order?.deliveryPartner?.phone || 'Verified Partner'} • 4.8 ★
+              </Text>
             </View>
             <TouchableOpacity style={styles.callBtn}>
               <Ionicons name="call" size={20} color={Colors.white} />
@@ -157,11 +159,125 @@ export default function OrderTrackingScreen() {
           </View>
         )}
 
+        {/* Post-Delivery Rating & Review */}
+        {currentStep === 5 && (
+          <ReviewSection orderId={id as string} restaurantName={order?.restaurant?.name || 'Restaurant'} />
+        )}
+
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+function ReviewSection({ orderId, restaurantName }: { orderId: string; restaurantName: string }) {
+  const Colors = useTheme();
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await fetchAPI(`/orders/${orderId}/review`, {
+        method: 'POST',
+        body: JSON.stringify({ rating, comment: comment.trim() || undefined }),
+      });
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error('Review submit failed:', err);
+      alert(err.message || 'Failed to submit review');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <View style={[reviewStyles.card, { backgroundColor: Colors.surface, borderColor: Colors.border }]}>
+        <Ionicons name="checkmark-circle" size={40} color={Colors.success} style={{ alignSelf: 'center', marginBottom: 8 }} />
+        <Text style={[reviewStyles.title, { color: Colors.text, textAlign: 'center' }]}>Thank you for your review!</Text>
+        <Text style={[reviewStyles.subtitle, { color: Colors.textSecondary, textAlign: 'center' }]}>
+          Your feedback helps {restaurantName} improve their food and service.
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={[reviewStyles.card, { backgroundColor: Colors.surface, borderColor: Colors.border }]}>
+      <Text style={[reviewStyles.title, { color: Colors.text }]}>Rate your food & delivery</Text>
+      <Text style={[reviewStyles.subtitle, { color: Colors.textSecondary }]}>
+        How was your order from {restaurantName}?
+      </Text>
+
+      {/* Star Selector */}
+      <View style={reviewStyles.starsRow}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <TouchableOpacity key={star} onPress={() => setRating(star)} style={{ padding: 4 }}>
+            <Ionicons
+              name={star <= rating ? 'star' : 'star-outline'}
+              size={32}
+              color={star <= rating ? '#f59e0b' : Colors.textTertiary}
+            />
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <TextInput
+        style={[reviewStyles.commentInput, { backgroundColor: Colors.background, color: Colors.text, borderColor: Colors.border }]}
+        placeholder="Write a comment (optional)..."
+        placeholderTextColor={Colors.textTertiary}
+        multiline
+        numberOfLines={3}
+        value={comment}
+        onChangeText={setComment}
+      />
+
+      <TouchableOpacity
+        style={[reviewStyles.submitBtn, { backgroundColor: Colors.primary }, isSubmitting && { opacity: 0.7 }]}
+        onPress={handleSubmit}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={reviewStyles.submitBtnText}>Submit Review</Text>
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const reviewStyles = StyleSheet.create({
+  card: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.xl,
+    padding: Spacing.lg,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    ...Shadows.card,
+  },
+  title: { fontSize: FontSize.lg, fontWeight: FontWeight.bold, marginBottom: 4 },
+  subtitle: { fontSize: FontSize.sm, marginBottom: Spacing.md },
+  starsRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginVertical: Spacing.sm },
+  commentInput: {
+    borderWidth: 1,
+    borderRadius: Radius.md,
+    padding: 12,
+    fontSize: FontSize.sm,
+    textAlignVertical: 'top',
+    marginVertical: Spacing.md,
+  },
+  submitBtn: {
+    paddingVertical: 14,
+    borderRadius: Radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  submitBtnText: { color: '#fff', fontSize: FontSize.md, fontWeight: FontWeight.bold },
+});
 
 const createStyles = (Colors: any) => StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },

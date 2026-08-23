@@ -269,4 +269,51 @@ export class OrdersService {
             totalRestaurants,
         };
     }
+
+    async addReview(orderId: string, userId: string, data: { rating: number; comment?: string }) {
+        const order = await this.prisma.order.findUnique({
+            where: { id: orderId },
+            include: { restaurant: true },
+        });
+
+        if (!order) {
+            throw new NotFoundException('Order not found');
+        }
+
+        if (order.userId !== userId) {
+            throw new ForbiddenException('You can only review your own orders');
+        }
+
+        const review = await this.prisma.review.upsert({
+            where: { orderId },
+            create: {
+                orderId,
+                userId,
+                restaurantId: order.restaurantId,
+                rating: Number(data.rating),
+                comment: data.comment,
+            },
+            update: {
+                rating: Number(data.rating),
+                comment: data.comment,
+            },
+        });
+
+        // Recalculate restaurant ratings
+        const restaurantReviews = await this.prisma.review.aggregate({
+            where: { restaurantId: order.restaurantId },
+            _avg: { rating: true },
+            _count: { rating: true },
+        });
+
+        await this.prisma.restaurant.update({
+            where: { id: order.restaurantId },
+            data: {
+                rating: restaurantReviews._avg.rating || 0,
+                totalRatings: restaurantReviews._count.rating || 0,
+            },
+        });
+
+        return review;
+    }
 }

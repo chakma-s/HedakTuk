@@ -105,7 +105,16 @@ export default function ProfileScreen() {
         {/* Menu Items */}
         <View style={styles.menuSection}>
           {MENU_ITEMS.map((item, i) => (
-            <TouchableOpacity key={i} style={styles.menuItem} activeOpacity={0.7}>
+            <TouchableOpacity 
+              key={i} 
+              style={styles.menuItem} 
+              activeOpacity={0.7}
+              onPress={() => {
+                if (item.label === 'Saved Addresses') {
+                  router.push('/addresses');
+                }
+              }}
+            >
               <Ionicons name={item.icon as any} size={20} color={Colors.textSecondary} />
               <Text style={styles.menuLabel}>{item.label}</Text>
               <View style={styles.menuRight}>

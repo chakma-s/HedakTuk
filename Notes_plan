@@ -39,15 +39,15 @@ Track the end-to-end development of the HedakTuk full-stack food delivery ecosys
 
 ---
 
-## 📱 Phase 4: Customer App Feature Completeness & Polish (IN PROGRESS)
-- [ ] Saved Addresses Management screen & checkout address selector (`POST /users/me/addresses`)
-- [ ] Coupon code input and discount breakdown in `checkout.tsx`
-- [ ] Post-delivery Rating & Review submission modal/screen (`POST /reviews`)
-- [ ] Interactive live map view in `track/[id].tsx` with restaurant and dropoff pins
+## 📱 Phase 4: Customer App Feature Completeness & Polish (COMPLETED)
+- [x] Saved Addresses Management screen & checkout address selector (`POST /users/me/addresses`, `addresses.tsx`)
+- [x] Coupon code input and discount breakdown in `checkout.tsx` (`WELCOME50`, `SAVE20`, `FESTIVE100`)
+- [x] Post-delivery Rating & Review submission modal/screen (`POST /orders/:id/review`)
+- [x] Order tracking status progression with live delivery partner details (`track/[id].tsx`)
 
 ---
 
-## 📍 Phase 5: Real-Time GPS Tracking & Driver Auth
+## 📍 Phase 5: Real-Time GPS Tracking & Driver Auth (IN PROGRESS)
 - [ ] Implement live GPS location tracking via `expo-location` in Delivery App
 - [ ] Broadcast `delivery_location_updated` over WebSockets during active trips
 - [ ] Live animated driver marker on Customer tracking map
