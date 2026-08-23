@@ -16,6 +16,10 @@ async function bootstrap() {
             process.env.ADMIN_URL || 'http://localhost:3001',
             process.env.RESTAURANT_URL || 'http://localhost:3002',
             process.env.MOBILE_API_URL || 'http://localhost:3000',
+            'http://localhost:8081',
+            'http://localhost:8082',
+            'http://localhost:3333',
+            '*',
         ],
         credentials: true,
     });
@@ -57,7 +61,7 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
 
     // Start
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 3333;
     await app.listen(port);
     logger.log(`🚀 API running on http://localhost:${port}`);
     logger.log(`📖 Swagger docs at http://localhost:${port}/api/docs`);

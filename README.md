@@ -19,11 +19,13 @@
 ```
 hedaktuk-app/
 ├── apps/
-│   ├── api/          # NestJS Backend API
-│   ├── mobile/       # React Native (Expo) App
-│   └── admin-web/    # Next.js Admin Panel
+│   ├── api/               # NestJS Backend API (Port 3333)
+│   ├── customer-app/      # React Native (Expo) Customer App
+│   ├── delivery-app/      # React Native (Expo) Delivery Partner App
+│   ├── restaurant-panel/  # Next.js 14 Restaurant Kitchen & Menu Panel (Port 3002)
+│   └── admin-panel/       # Next.js 14 Super Admin Management Panel (Port 3001)
 ├── packages/
-│   └── shared-types/ # Shared TypeScript interfaces
+│   └── shared-types/      # Shared TypeScript interfaces & enums
 ├── docker-compose.yml
 ├── turbo.json
 └── .env.example
@@ -40,8 +42,8 @@ hedaktuk-app/
 ### 1. Clone & Install
 
 ```bash
-git clone <repo-url>
-cd hedaktuk-app
+git clone https://github.com/chakma-s/HedakTuk.git
+cd HedakTuk
 npm install
 ```
 
@@ -58,30 +60,32 @@ cp .env.example .env
 docker compose up -d
 ```
 
-### 4. Run Database Migrations
+### 4. Run Database Migrations & Seed
 
 ```bash
 cd apps/api
 npx prisma migrate dev --name init
-npx prisma generate
+npx prisma db seed
 cd ../..
 ```
 
 ### 5. Start Development
 
 ```bash
-# Start all apps
+# Start all apps via Turbo
 npm run dev
 
 # Or start individually
-cd apps/api && npm run dev      # Backend on :3000
-cd apps/admin-web && npm run dev # Admin on :3001
-cd apps/mobile && npx expo start # Mobile app
+cd apps/api && npm run dev              # Backend on :3333
+cd apps/restaurant-panel && npm run dev # Restaurant on :3002
+cd apps/admin-panel && npm run dev      # Admin on :3001
+cd apps/customer-app && npx expo start  # Customer app
+cd apps/delivery-app && npx expo start  # Delivery partner app
 ```
 
 ### 6. API Documentation
 
-Once the backend is running, visit: **<http://localhost:3000/api/docs>** for Swagger docs.
+Once the backend is running, visit: **<http://localhost:3333/api/docs>** for Swagger docs.
 
 ## Backend Modules
 

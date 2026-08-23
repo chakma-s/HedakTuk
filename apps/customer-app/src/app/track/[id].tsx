@@ -51,10 +51,10 @@ export default function OrderTrackingScreen() {
 
     socket.on('connect', () => {
       console.log('Connected to order tracking WS');
-      socket.emit('order:join', id); // Emit JOIN_ORDER_ROOM event
+      socket.emit('join_order_room', id);
     });
 
-    socket.on('order:status_updated', (data: { orderId: string, status: string, updatedAt: string }) => {
+    socket.on('order_status_updated', (data: { orderId: string; status: string; updatedAt: string }) => {
       if (data.orderId === id) {
         setOrder((prev: any) => ({ ...prev, status: data.status }));
         const stepIndex = STATUS_FLOW.indexOf(data.status);
@@ -69,7 +69,7 @@ export default function OrderTrackingScreen() {
     });
 
     return () => {
-      socket.emit('order:leave', id);
+      socket.emit('leave_order_room', id);
       socket.disconnect();
     };
   }, [id]);
