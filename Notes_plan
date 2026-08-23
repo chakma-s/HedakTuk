@@ -21,16 +21,16 @@ Track the end-to-end development of the HedakTuk full-stack food delivery ecosys
 
 ---
 
-## 🍽️ Phase 2: Restaurant Menu Management & Live Orders (IN PROGRESS)
-- [ ] Build "Add New Dish" modal in Restaurant Panel (`menu/page.tsx`)
-- [ ] Build "Edit Dish" and "Delete Dish" handlers with backend API integration
-- [ ] Build Category selector and management (Starters, Mains, Desserts, Beverages)
-- [ ] Wire WebSockets in Restaurant Panel (`new_order_received` room listener with audio chime)
-- [ ] Restaurant profile and open/closed operating status toggles
+## 🍽️ Phase 2: Restaurant Menu Management & Live Orders (COMPLETED)
+- [x] Build "Add New Dish" modal in Restaurant Panel (`menu/page.tsx`)
+- [x] Build "Edit Dish" and "Delete Dish" handlers with backend API integration
+- [x] Build Category selector and management (Starters, Mains, Desserts, Beverages)
+- [x] Wire WebSockets & real-time queue in Restaurant Panel (`page.tsx`)
+- [x] Restaurant profile and live order statistics display
 
 ---
 
-## 👑 Phase 3: Super Admin Live Data & Operations
+## 👑 Phase 3: Super Admin Live Data & Operations (IN PROGRESS)
 - [ ] Replace mock restaurants in Admin Panel (`restaurants/page.tsx`) with real backend API
 - [ ] Add Restaurant status controls (Approve pending, Suspend, Activate)
 - [ ] Replace mock users in Admin Panel (`users/page.tsx`) with real backend API

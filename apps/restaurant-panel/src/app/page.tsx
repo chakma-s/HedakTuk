@@ -3,15 +3,15 @@ import React, { useState, useEffect } from "react";
 import { Clock, CheckCircle2, ShoppingBag, ArrowRight } from "lucide-react";
 import { fetchAPI } from "@/lib/api";
 
-type OrderStatus = "PLACED" | "CONFIRMED" | "PREPARING" | "READY" | "DELIVERED";
+type OrderStatus = "PLACED" | "CONFIRMED" | "PREPARING" | "READY" | "PICKED_UP" | "OUT_FOR_DELIVERY" | "DELIVERED" | "CANCELLED";
 
 export default function DashboardPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [restaurantName, setRestaurantName] = useState("");
 
   useEffect(() => {
     loadOrders();
-    // In a real app, we'd use WebSockets here for live updates
     const interval = setInterval(loadOrders, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -20,12 +20,16 @@ export default function DashboardPage() {
     try {
       // 1. Get my restaurant
       const myRestaurants = await fetchAPI('/restaurants');
-      const myRestaurant = myRestaurants.data[0];
+      const myRestaurant = myRestaurants?.data?.[0];
       if (!myRestaurant) return;
+
+      setRestaurantName(myRestaurant.name);
 
       // 2. Get orders
       const res = await fetchAPI(`/orders/restaurant/${myRestaurant.id}`);
-      setOrders(res.data);
+      if (res && res.data) {
+        setOrders(res.data);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -49,21 +53,27 @@ export default function DashboardPage() {
   const preparingOrders = orders.filter((o) => o.status === "PREPARING");
   const readyOrders = orders.filter((o) => o.status === "READY");
 
+  const todayRevenue = orders
+    .filter((o) => o.status !== "CANCELLED")
+    .reduce((sum, o) => sum + (o.total || 0), 0);
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Live Orders</h1>
-          <p className="text-muted">Manage your active orders in real-time.</p>
+          <p className="text-muted">
+            {restaurantName ? `${restaurantName} — Real-time kitchen display.` : "Manage your active orders in real-time."}
+          </p>
         </div>
         <div className="flex gap-4">
           <div className="bg-surface border border-border px-4 py-2 rounded-lg text-center">
-            <p className="text-xs text-muted uppercase font-bold tracking-wider">Today's Orders</p>
-            <p className="text-xl font-bold text-primary">24</p>
+            <p className="text-xs text-muted uppercase font-bold tracking-wider">Active Orders</p>
+            <p className="text-xl font-bold text-primary">{newOrders.length + preparingOrders.length + readyOrders.length}</p>
           </div>
           <div className="bg-surface border border-border px-4 py-2 rounded-lg text-center">
-            <p className="text-xs text-muted uppercase font-bold tracking-wider">Revenue</p>
-            <p className="text-xl font-bold text-foreground">₹8,450</p>
+            <p className="text-xs text-muted uppercase font-bold tracking-wider">Today's Revenue</p>
+            <p className="text-xl font-bold text-foreground">₹{todayRevenue.toLocaleString()}</p>
           </div>
         </div>
       </div>
@@ -75,7 +85,7 @@ export default function DashboardPage() {
           icon={<ShoppingBag size={18} />}
           count={newOrders.length}
           orders={newOrders}
-          onAction={(id) => moveOrder(id, "preparing")}
+          onAction={(id) => moveOrder(id, "PREPARING")}
           actionLabel="Accept & Prepare"
           actionColor="bg-primary hover:bg-orange-600 text-white"
         />
@@ -86,7 +96,7 @@ export default function DashboardPage() {
           icon={<Clock size={18} />}
           count={preparingOrders.length}
           orders={preparingOrders}
-          onAction={(id) => moveOrder(id, "ready")}
+          onAction={(id) => moveOrder(id, "READY")}
           actionLabel="Mark as Ready"
           actionColor="bg-surface-alt border border-border text-foreground hover:bg-border"
         />
@@ -97,8 +107,8 @@ export default function DashboardPage() {
           icon={<CheckCircle2 size={18} />}
           count={readyOrders.length}
           orders={readyOrders}
-          onAction={(id) => setOrders(orders.filter(o => o.id !== id))}
-          actionLabel="Handed to Delivery"
+          onAction={(id) => moveOrder(id, "PICKED_UP")}
+          actionLabel="Mark Picked Up"
           actionColor="bg-green-500 hover:bg-green-600 text-white"
         />
       </div>
@@ -109,7 +119,7 @@ export default function DashboardPage() {
 function OrderColumn({ 
   title, icon, count, orders, onAction, actionLabel, actionColor 
 }: { 
-  title: string, icon: React.ReactNode, count: number, orders: Order[], 
+  title: string, icon: React.ReactNode, count: number, orders: any[], 
   onAction: (id: string) => void, actionLabel: string, actionColor: string
 }) {
   return (

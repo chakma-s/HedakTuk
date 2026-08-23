@@ -38,7 +38,7 @@ export class MenuService {
         return this.prisma.menuItem.findMany({
             where,
             orderBy: { name: 'asc' },
-            include: { category: { select: { name: true } } },
+            include: { category: { select: { id: true, name: true } } },
         });
     }
 
