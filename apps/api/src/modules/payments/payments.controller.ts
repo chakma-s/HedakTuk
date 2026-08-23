@@ -18,4 +18,10 @@ export class PaymentsController {
     webhook(@Body() payload: any, @Headers('x-razorpay-signature') signature: string) {
         return this.paymentsService.handleWebhook(payload, signature);
     }
+
+    @Post('verify')
+    @ApiOperation({ summary: 'Verify client payment transaction' })
+    verifyPayment(@Body() body: { orderId: string; paymentId: string; status?: string }) {
+        return this.paymentsService.verifyPayment(body);
+    }
 }

@@ -50,4 +50,33 @@ export class PaymentsService {
 
         return { received: true };
     }
+
+    async verifyPayment(data: { orderId: string; paymentId: string; status?: string }) {
+        const payment = await this.prisma.payment.findUnique({
+            where: { orderId: data.orderId },
+        });
+
+        if (!payment) {
+            throw new NotFoundException('Payment record not found');
+        }
+
+        const isSuccess = data.status !== 'failed';
+
+        const updatedPayment = await this.prisma.payment.update({
+            where: { orderId: data.orderId },
+            data: {
+                status: isSuccess ? 'SUCCESS' : 'FAILED',
+                gatewayTransactionId: data.paymentId,
+            },
+        });
+
+        if (isSuccess) {
+            await this.prisma.order.update({
+                where: { id: data.orderId },
+                data: { status: 'CONFIRMED' },
+            });
+        }
+
+        return { success: isSuccess, payment: updatedPayment };
+    }
 }

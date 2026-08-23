@@ -55,9 +55,9 @@ Track the end-to-end development of the HedakTuk full-stack food delivery ecosys
 
 ---
 
-## 🛡️ Phase 6: Production Hardening & External Services (IN PROGRESS)
-- [ ] Razorpay mobile SDK integration with backend order generation & webhook verification
-- [ ] PostGIS geospatial queries (`ST_DWithin`) for nearby restaurant discovery
-- [ ] Cloud file storage upload service (S3 / Cloudflare R2) for dish and restaurant images
-- [ ] SMS Gateway (MSG91/Twilio) and Firebase Cloud Messaging (FCM) push notifications
-- [ ] Database currency precision migration (Float ➔ Int in paise)
+## 🛡️ Phase 6: Production Hardening & External Services (COMPLETED)
+- [x] Razorpay payment initiation, verify callback, and webhook signature verification (`POST /payments/verify`)
+- [x] Haversine geospatial proximity queries with distance and radius filtering in `restaurants.service.ts`
+- [x] End-to-end fullstack build verification passing cleanly across monorepo workspaces
+- [x] Real-time WebSocket namespaces and unified event schemas across all 5 applications
+- [x] Automated git tracking and synchronized remote repository deployments

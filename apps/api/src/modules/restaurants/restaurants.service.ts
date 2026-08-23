@@ -1,6 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 
+function calculateHaversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371; // Earth radius in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Number((R * c).toFixed(1));
+}
+
 @Injectable()
 export class RestaurantsService {
     constructor(private readonly prisma: PrismaService) { }
@@ -15,7 +27,7 @@ export class RestaurantsService {
         page?: number;
         limit?: number;
     }) {
-        const { page = 1, limit = 20, search, cuisine } = params;
+        const { page = 1, limit = 20, search, cuisine, latitude, longitude, radiusKm = 15 } = params;
         const skip = (page - 1) * limit;
 
         const where: any = { isActive: true };
@@ -31,14 +43,9 @@ export class RestaurantsService {
             where.cuisines = { hasSome: [cuisine] };
         }
 
-        // TODO: Add PostGIS-based geospatial filtering for distance queries
-        // For now, return all matching restaurants sorted by rating
-
         const [restaurants, total] = await Promise.all([
             this.prisma.restaurant.findMany({
                 where,
-                skip,
-                take: limit,
                 orderBy: { rating: 'desc' },
                 select: {
                     id: true, name: true, description: true, coverImageUrl: true, logoUrl: true,
@@ -50,9 +57,28 @@ export class RestaurantsService {
             this.prisma.restaurant.count({ where }),
         ]);
 
+        let results: any[] = restaurants;
+
+        if (latitude !== undefined && longitude !== undefined) {
+            results = restaurants
+                .map((r: any) => {
+                    const distanceKm = calculateHaversineDistanceKm(
+                        Number(latitude),
+                        Number(longitude),
+                        r.latitude,
+                        r.longitude,
+                    );
+                    return { ...r, distanceKm };
+                })
+                .filter((r: any) => r.distanceKm <= Number(radiusKm))
+                .sort((a: any, b: any) => a.distanceKm - b.distanceKm);
+        }
+
+        const paginated = results.slice(skip, skip + Number(limit));
+
         return {
-            data: restaurants,
-            meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+            data: paginated,
+            meta: { total: results.length, page: Number(page), limit: Number(limit), totalPages: Math.ceil(results.length / Number(limit)) },
         };
     }
 
