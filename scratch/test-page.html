@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HedakTuk — Test Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0a0a;
+            --bg-card: #111111;
+            --primary: #e7620c;
+            --primary-glow: rgba(231, 98, 12, 0.4);
+            --accent-cyan: #f59e0b;
+            --accent-pink: #d9480f;
+            --text-main: #f8fafc;
+            --text-muted: #a1a1aa;
+            --glass: #111111;
+            --border-glass: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            letter-spacing: -0.01em;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'SF Pro Display', 'Inter', sans-serif;
+            letter-spacing: -0.03em;
+            font-weight: 700;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .section-dark { background-color: var(--bg-deep); }
+        .section-light-overlay { background-color: #141414; }
+
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 0.5rem;
+            padding: 2.5rem;
+            box-shadow: none;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover { border-color: rgba(255, 255, 255, 0.15); }
+
+        @keyframes glow-pulse {
+            0% { box-shadow: 0 0 5px var(--primary-glow); }
+            50% { box-shadow: 0 0 15px var(--primary-glow); }
+            100% { box-shadow: 0 0 5px var(--primary-glow); }
+        }
+
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            opacity: 0;
+            animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .reveal-delay-1 { animation-delay: 0.1s; }
+        .reveal-delay-2 { animation-delay: 0.2s; }
+        .reveal-delay-3 { animation-delay: 0.3s; }
+        .reveal-delay-4 { animation-delay: 0.4s; }
+
+        .glow-btn {
+            background: transparent;
+            color: white;
+            border: 1px solid var(--border-glass);
+            padding: 0.85rem 1.8rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .glow-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--text-main);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+        .glow-btn:hover { color: var(--primary); border-color: var(--text-main); }
+        .glow-btn:hover::before { transform: scaleX(1); }
+
+        .glow-btn.primary-fill { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .glow-btn.primary-fill::before { background: #fff; }
+        .glow-btn.primary-fill:hover { color: var(--primary); border-color: var(--primary); }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: transparent;
+            position: absolute;
+            width: 100%;
+            z-index: 1000;
+            transition: background 0.3s ease, position 0s;
+        }
+        nav.scrolled {
+            position: fixed;
+            top: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        nav .logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -0.03em;
+            display: inline-flex;
+            align-items: center;
+        }
+        .logo-accent { color: var(--primary); }
+
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: #ffffff; }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 10%;
+            background: var(--bg-deep);
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .hero h1 { font-size: 5rem; margin-bottom: 2rem; line-height: 1.1; position: relative; }
+        .hero p { font-size: 1.25rem; color: var(--text-muted); max-width: 700px; margin-bottom: 3rem; position: relative; }
+        .hero-buttons { display: flex; gap: 1rem; position: relative; }
+
+        .container { padding: 8rem 5%; }
+
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-header h2 { font-size: 2.8rem; margin-bottom: 1rem; }
+        .section-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+        .section-label {
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .grid-services { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .services-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; align-items: stretch; }
+
+        .glass-card .card-icon { font-size: 2rem; margin-bottom: 1.25rem; display: block; }
+        .glass-card h3 { font-size: 1.2rem; margin-bottom: 0.75rem; }
+        .glass-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 4rem; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 2.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; }
+
+        .glass-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border-glass);
+            border-radius: 0;
+            padding: 0.75rem 0;
+            color: white;
+            margin-bottom: 2rem;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+        }
+        .glass-input::placeholder { color: rgba(255,255,255,0.3); }
+        select.glass-input option, .glass-input option { background-color: var(--bg-deep) !important; color: #ffffff !important; }
+        .glass-input:focus { border-color: var(--text-main); }
+        .form-container { max-width: 500px; margin: 4rem auto; }
+
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .status-in-progress { background: rgba(231, 98, 12, 0.1); color: #e7620c; }
+        .status-completed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .progress-bar { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 2px; overflow: hidden; margin-top: 1rem; }
+        .progress-fill { height: 100%; background: var(--primary); transition: width 0.5s ease; }
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
+        .dashboard-card-metric { font-size: 2rem; font-weight: 800; margin: 0.75rem 0 0.25rem; }
+        .dashboard-card-label { color: var(--text-muted); font-size: 0.85rem; }
+        .dashboard-card-change { font-size: 0.8rem; margin-top: 0.5rem; }
+        .change-up { color: #10b981; }
+        .change-down { color: #ef4444; }
+
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+        .data-table th, .data-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-glass); }
+        .data-table th { color: var(--text-muted); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .data-table td { font-size: 0.95rem; }
+        .data-table tbody tr { transition: background 0.2s; }
+        .data-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+        footer { padding: 4rem 5% 2rem; border-top: 1px solid var(--border-glass); }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+        .footer-brand p { color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem; max-width: 300px; }
+        .footer-col h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 1.25rem; font-weight: 600; }
+        .footer-col a { display: block; color: rgba(255, 255, 255, 0.5); text-decoration: none; font-size: 0.9rem; margin-bottom: 0.75rem; transition: color 0.3s; }
+        .footer-col a:hover { color: #fff; }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid var(--border-glass); color: var(--text-muted); font-size: 0.8rem; }
+
+        @media (max-width: 767px) {
+            .container { padding: 5rem 5%; }
+            .hero h1 { font-size: 2.5rem !important; }
+            .hero p { font-size: 1.1rem !important; }
+            nav { padding: 1rem 5%; flex-wrap: wrap; background: var(--bg-deep); }
+            .nav-links { flex-direction: column; gap: 1rem; width: 100%; margin-top: 1rem; text-align: center; display: none; }
+            .grid-services { grid-template-columns: 1fr; gap: 1.5rem; }
+            .services-row { grid-template-columns: 1fr; gap: 1.5rem; }
+            .glass-card { padding: 2rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .hero h1 { font-size: 3.5rem; }
+            .container { padding: 6rem 5%; }
+            .grid-services { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        * { max-width: 100%; word-wrap: break-word; overflow-wrap: break-word; }
+        img { max-width: 100%; height: auto; }
+        h1, h2, h3, h4, h5, h6, p { overflow-wrap: break-word; word-wrap: break-word; hyphens: auto; }
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="#" class="logo">HEDAK<span class="logo-accent">TUK</span></a>
+        <ul class="nav-links">
+            <li><a href="#hero" class="active">Home</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#dashboard">Dashboard</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="#contact" class="glow-btn primary-fill">Get Started</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero section-dark" id="hero">
+        <h1 class="reveal">Food, delivered<br>in <span style="color: var(--primary)">minutes</span></h1>
+        <p class="reveal reveal-delay-1">Order from the best local restaurants with blazing-fast delivery. Fresh meals, right to your door — powered by HedakTuk.</p>
+        <div class="hero-buttons reveal reveal-delay-2">
+            <a href="#services" class="glow-btn primary-fill">Explore Services</a>
+            <a href="#dashboard" class="glow-btn">View Dashboard</a>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="section-light-overlay">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item reveal">
+                    <div class="stat-number">2.4K+</div>
+                    <div class="stat-label">Restaurants</div>
+                </div>
+                <div class="stat-item reveal reveal-delay-1">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Orders Delivered</div>
+                </div>
+                <div class="stat-item reveal reveal-delay-2">
+                    <div class="stat-number">18 min</div>
+                    <div class="stat-label">Avg. Delivery</div>
+                </div>
+                <div class="stat-item reveal reveal-delay-3">
+                    <div class="stat-number">4.8★</div>
+                    <div class="stat-label">App Rating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section class="section-dark" id="services">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">What We Offer</span>
+                <h2>Built for speed,<br>designed for taste</h2>
+                <p>Every feature is crafted to make ordering food effortless and delightful.</p>
+            </div>
+            <div class="grid-services">
+                <div class="glass-card reveal reveal-delay-1">
+                    <span class="card-icon">🍔</span>
+                    <h3>Restaurant Discovery</h3>
+                    <p>Browse curated restaurants near you with real-time menus, ratings, and delivery estimates.</p>
+                </div>
+                <div class="glass-card reveal reveal-delay-2">
+                    <span class="card-icon">⚡</span>
+                    <h3>Lightning Delivery</h3>
+                    <p>Our optimized delivery network ensures your food arrives hot and fresh in under 20 minutes.</p>
+                </div>
+                <div class="glass-card reveal reveal-delay-3">
+                    <span class="card-icon">📍</span>
+                    <h3>Live Tracking</h3>
+                    <p>Track your order in real-time from kitchen to doorstep with precise GPS updates.</p>
+                </div>
+                <div class="glass-card reveal reveal-delay-4">
+                    <span class="card-icon">🔐</span>
+                    <h3>Secure Payments</h3>
+                    <p>Multiple payment options with industry-leading encryption to keep your transactions safe.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard -->
+    <section class="section-light-overlay" id="dashboard">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Admin Dashboard</span>
+                <h2>Complete control<br>at a glance</h2>
+                <p>Monitor orders, track deliveries, and manage restaurants — all in one place.</p>
+            </div>
+
+            <div class="dashboard-grid reveal">
+                <div class="glass-card">
+                    <span class="dashboard-card-label">Total Revenue</span>
+                    <div class="dashboard-card-metric">$48,290</div>
+                    <div class="dashboard-card-change change-up">↑ 12.5% from last week</div>
+                </div>
+                <div class="glass-card">
+                    <span class="dashboard-card-label">Active Orders</span>
+                    <div class="dashboard-card-metric">142</div>
+                    <div class="dashboard-card-change change-up">↑ 8.3% from yesterday</div>
+                </div>
+                <div class="glass-card">
+                    <span class="dashboard-card-label">Avg. Delivery Time</span>
+                    <div class="dashboard-card-metric">17m</div>
+                    <div class="dashboard-card-change change-down">↓ 2.1 min faster</div>
+                </div>
+            </div>
+
+            <div class="glass-card reveal" style="margin-top: 2rem; padding: 1.5rem;">
+                <div class="dashboard-header">
+                    <h3>Recent Orders</h3>
+                    <a href="#" class="glow-btn" style="padding: 0.5rem 1.2rem; font-size: 0.85rem;">View All</a>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Restaurant</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#HTK-2847</td>
+                            <td>Anika Das</td>
+                            <td>Spice Garden</td>
+                            <td>$24.50</td>
+                            <td><span class="status-badge status-completed">Delivered</span></td>
+                            <td><div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div></td>
+                        </tr>
+                        <tr>
+                            <td>#HTK-2846</td>
+                            <td>Ravi Kumar</td>
+                            <td>Pizza Planet</td>
+                            <td>$18.90</td>
+                            <td><span class="status-badge status-in-progress">In Transit</span></td>
+                            <td><div class="progress-bar"><div class="progress-fill" style="width: 65%;"></div></div></td>
+                        </tr>
+                        <tr>
+                            <td>#HTK-2845</td>
+                            <td>Mira Patel</td>
+                            <td>Sushi Express</td>
+                            <td>$32.00</td>
+                            <td><span class="status-badge status-in-progress">Preparing</span></td>
+                            <td><div class="progress-bar"><div class="progress-fill" style="width: 30%;"></div></div></td>
+                        </tr>
+                        <tr>
+                            <td>#HTK-2844</td>
+                            <td>Sourav Basu</td>
+                            <td>Burger Barn</td>
+                            <td>$15.75</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td><div class="progress-bar"><div class="progress-fill" style="width: 10%;"></div></div></td>
+                        </tr>
+                        <tr>
+                            <td>#HTK-2843</td>
+                            <td>Priya Sen</td>
+                            <td>Taco Town</td>
+                            <td>$22.30</td>
+                            <td><span class="status-badge status-completed">Delivered</span></td>
+                            <td><div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partner Section (2-col) -->
+    <section class="section-dark">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">For Partners</span>
+                <h2>Grow your restaurant<br>with HedakTuk</h2>
+            </div>
+            <div class="services-row">
+                <div class="glass-card reveal">
+                    <span class="card-icon">📊</span>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Real-time insights into your orders, revenue, and customer trends. Make data-driven decisions to grow your business.</p>
+                    <br>
+                    <a href="#" class="glow-btn">Learn More →</a>
+                </div>
+                <div class="glass-card reveal reveal-delay-1">
+                    <span class="card-icon">🚀</span>
+                    <h3>Delivery Fleet</h3>
+                    <p>Access our network of verified delivery partners. We handle logistics so you can focus on making great food.</p>
+                    <br>
+                    <a href="#" class="glow-btn primary-fill">Join Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section-light-overlay" id="contact">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Get In Touch</span>
+                <h2>Partner with us</h2>
+                <p>Join the fastest growing food delivery platform. We'll get back to you within 24 hours.</p>
+            </div>
+            <div class="form-container">
+                <form class="reveal" onsubmit="event.preventDefault(); alert('Form submitted! (Test)')">
+                    <input type="text" class="glass-input" placeholder="Restaurant name">
+                    <input type="email" class="glass-input" placeholder="Email address">
+                    <input type="tel" class="glass-input" placeholder="Phone number">
+                    <select class="glass-input">
+                        <option value="" disabled selected>Select city</option>
+                        <option value="bangalore">Bangalore</option>
+                        <option value="mumbai">Mumbai</option>
+                        <option value="delhi">Delhi</option>
+                        <option value="kolkata">Kolkata</option>
+                    </select>
+                    <textarea class="glass-input" rows="3" placeholder="Tell us about your restaurant..." style="resize: vertical; min-height: 80px;"></textarea>
+                    <button type="submit" class="glow-btn primary-fill" style="width: 100%; text-align: center; margin-top: 1rem;">Submit Application</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo" style="font-size: 1.5rem;">HEDAK<span class="logo-accent">TUK</span></a>
+                <p>Food delivered in minutes. Built with passion, powered by technology.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Product</h4>
+                <a href="#">Customer App</a>
+                <a href="#">Restaurant Panel</a>
+                <a href="#">Delivery App</a>
+                <a href="#">Admin Dashboard</a>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <a href="#">About</a>
+                <a href="#">Careers</a>
+                <a href="#">Blog</a>
+                <a href="#">Press</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="#">Help Center</a>
+                <a href="#">Contact Us</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 HedakTuk. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sticky nav on scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 80);
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('section[id]');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                if (window.scrollY >= section.offsetTop - 100) current = section.getAttribute('id');
+            });
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
+            });
+        });
+    </script>
+</body>
+</html>

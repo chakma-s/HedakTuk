@@ -125,7 +125,7 @@ export default function UsersPage() {
         </div>
       </div>
 
-      <div className="bg-surface border border-border rounded-xl flex flex-col flex-1 overflow-hidden shadow-sm">
+      <div className="bg-surface border border-border rounded-lg flex flex-col flex-1 overflow-hidden">
         <div className="overflow-x-auto">
           {loading ? (
             <div className="flex items-center justify-center p-12">
@@ -233,7 +233,7 @@ export default function UsersPage() {
       {/* Role Editor Modal */}
       {editingUser && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6">
+          <div className="bg-surface border border-border rounded-lg w-full max-w-sm overflow-hidden p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-foreground">Change User Role</h3>
               <button onClick={() => setEditingUser(null)} className="text-muted hover:text-foreground">

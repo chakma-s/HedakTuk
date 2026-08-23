@@ -239,7 +239,7 @@ export default function MenuEditorPage() {
       {/* Toast Notification */}
       {feedbackMsg && (
         <div
-          className={`absolute top-0 right-0 z-50 px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium transition-all ${
+          className={`absolute top-0 right-0 z-50 px-4 py-3 rounded-lg flex items-center gap-2 text-sm font-medium transition-all ${
             feedbackMsg.type === "success"
               ? "bg-green-600 text-white"
               : "bg-red-600 text-white"
@@ -266,7 +266,7 @@ export default function MenuEditorPage() {
           </button>
           <button
             onClick={openAddModal}
-            className="flex items-center gap-2 bg-primary hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-sm"
+            className="flex items-center gap-2 bg-primary hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
           >
             <Plus size={18} />
             Add New Dish
@@ -400,7 +400,7 @@ export default function MenuEditorPage() {
       {/* Add / Edit Dish Modal */}
       {showItemModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-surface border border-border rounded-lg w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-surface-alt">
               <h2 className="text-lg font-bold text-foreground">
                 {editingItem ? "Edit Dish" : "Add New Dish"}
@@ -563,7 +563,7 @@ export default function MenuEditorPage() {
       {/* Add Category Modal */}
       {showCategoryModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
+          <div className="bg-surface border border-border rounded-lg w-full max-w-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-surface-alt">
               <h2 className="text-lg font-bold text-foreground">Add New Category</h2>
               <button
@@ -614,7 +614,7 @@ export default function MenuEditorPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6 text-center">
+          <div className="bg-surface border border-border rounded-lg w-full max-w-sm overflow-hidden p-6 text-center">
             <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4">
               <Trash2 size={24} />
             </div>

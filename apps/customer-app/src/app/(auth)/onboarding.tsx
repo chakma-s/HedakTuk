@@ -51,7 +51,7 @@ export default function OnboardingScreen() {
   return (
     <View style={styles.container}>
       <Image 
-        source={require('../../../../assets/images/auth-bg.jpg')} 
+        source={require('../../../assets/images/auth-bg.jpg')} 
         style={styles.backgroundImage}
         contentFit="cover"
       />

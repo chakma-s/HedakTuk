@@ -78,6 +78,22 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Desktop Header */}
+        <header className="hidden md:flex h-16 border-b border-border bg-surface items-center justify-end px-6">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
+              className="p-2 text-muted hover:text-primary transition-colors"
+              title="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary flex items-center justify-center text-primary font-bold">
+              R
+            </div>
+          </div>
+        </header>
+
         {/* Mobile Header (simplified for now) */}
         <header className="md:hidden h-16 border-b border-border bg-surface flex items-center justify-between px-4">
           <h1 className="text-xl font-black text-primary uppercase tracking-tight">Hedaktuk</h1>

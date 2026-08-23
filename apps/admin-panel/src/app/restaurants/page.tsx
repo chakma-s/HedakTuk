@@ -112,7 +112,7 @@ export default function RestaurantsPage() {
         </div>
       </div>
 
-      <div className="bg-surface border border-border rounded-xl flex flex-col flex-1 overflow-hidden shadow-sm">
+      <div className="bg-surface border border-border rounded-lg flex flex-col flex-1 overflow-hidden">
         <div className="overflow-x-auto">
           {loading ? (
             <div className="flex items-center justify-center p-12">

@@ -46,7 +46,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-3 rounded-md transition-colors ${
                   isActive 
-                    ? "bg-primary text-white font-semibold shadow-md" 
+                    ? "bg-primary text-white font-semibold"
                     : "text-foreground hover:bg-surface-alt"
                 }`}
               >
@@ -93,6 +93,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
+              className="p-2 text-muted hover:text-primary transition-colors"
+              title="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
             <button className="p-2 text-muted hover:text-primary transition-colors relative">
               <Bell size={20} />
               <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-surface"></span>

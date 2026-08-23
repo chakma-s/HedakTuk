@@ -33,6 +33,7 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
+    "dev": "BROWSER=none expo start --web --port 8082",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",

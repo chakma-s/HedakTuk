@@ -136,7 +136,7 @@ function OrderColumn({
       
       <div className="flex-1 p-3 overflow-y-auto space-y-3">
         {orders.map((order) => (
-          <div key={order.id} className="bg-background border border-border rounded-lg p-4 shadow-sm">
+          <div key={order.id} className="bg-background border border-border rounded-lg p-4">
             <div className="flex justify-between items-start mb-3">
               <div>
                 <span className="text-xs font-bold bg-surface-alt px-2 py-1 rounded text-muted">

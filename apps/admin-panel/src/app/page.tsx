@@ -44,7 +44,7 @@ export default function SuperAdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Chart Area */}
-        <div className="lg:col-span-2 bg-surface border border-border rounded-xl p-6 flex flex-col shadow-sm">
+        <div className="lg:col-span-2 bg-surface border border-border rounded-lg p-6 flex flex-col hover:border-white/15 transition-colors">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-foreground">Revenue Growth</h2>
             <select className="bg-background border border-border rounded-md px-3 py-1 text-sm text-foreground">
@@ -59,7 +59,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* System Alerts / Pending Actions */}
-        <div className="bg-surface border border-border rounded-xl p-6 flex flex-col shadow-sm">
+        <div className="bg-surface border border-border rounded-lg p-6 flex flex-col hover:border-white/15 transition-colors">
           <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
             <AlertCircle className="text-primary" size={20} />
             Pending Actions
@@ -79,7 +79,7 @@ export default function SuperAdminDashboard() {
 
 function StatCard({ title, value, trend, isUp, icon, highlight = false }: { title: string, value: string, trend: string, isUp: boolean, icon: React.ReactNode, highlight?: boolean }) {
   return (
-    <div className={`bg-surface border ${highlight ? 'border-primary shadow-md shadow-primary/10' : 'border-border'} rounded-xl p-6 relative overflow-hidden`}>
+    <div className={`bg-surface border ${highlight ? 'border-primary' : 'border-border'} rounded-lg p-6 relative overflow-hidden hover:border-white/15 transition-colors`}>
       {highlight && <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-bl-full" />}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-muted font-bold text-xs uppercase tracking-wider">{title}</h3>

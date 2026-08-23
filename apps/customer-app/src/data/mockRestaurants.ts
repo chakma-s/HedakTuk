@@ -55,7 +55,7 @@ export const CUISINE_CATEGORIES = [
 
 export const BANNERS = [
   { id: '1', title: '60% OFF', subtitle: 'Up to ₹120 on first order', color: '#FF6B6B', emoji: '🎉' },
-  { id: '2', title: 'FREE DELIVERY', subtitle: 'On orders above ₹199', color: '#00D9A6', emoji: '🛵' },
+  { id: '2', title: 'FREE DELIVERY', subtitle: 'On orders above ₹199', color: '#10b981', emoji: '🛵' },
   { id: '3', title: 'TRY NEW', subtitle: 'Discover trending restaurants', color: '#6C9FFF', emoji: '🔥' },
 ];
 

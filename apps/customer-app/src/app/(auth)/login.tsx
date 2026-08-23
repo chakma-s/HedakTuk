@@ -47,7 +47,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Image 
-        source={require('../../../../assets/images/auth-bg.jpg')} 
+        source={require('../../../assets/images/auth-bg.jpg')} 
         style={styles.backgroundImage}
         contentFit="cover"
         transition={1000}

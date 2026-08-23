@@ -5,6 +5,7 @@ import { useTheme } from '@/stores/themeStore';
 import { useDeliveryStore } from '@/stores/deliveryStore';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchAPI } from '@/api';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const { width } = Dimensions.get('window');
 
@@ -61,9 +62,12 @@ export default function DeliveryDashboard() {
           <Text style={styles.greeting}>Hello, Rider!</Text>
           <Text style={styles.subtitle}>Ready for deliveries?</Text>
         </View>
-        <TouchableOpacity style={styles.profileBtn}>
-          <Ionicons name="person-circle" size={40} color={Colors.textSecondary} />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <ThemeToggle />
+          <TouchableOpacity style={styles.profileBtn}>
+            <Ionicons name="person-circle" size={40} color={Colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Online/Offline Toggle */}

@@ -1,81 +1,81 @@
-// Design tokens for the HedakTuk app
-// Swiggy/Zomato dark mode inspired
+// Design tokens for the HedakTuk Delivery App
+// Dark minimalist design system
 
 export const LightColors = {
   // Backgrounds
-  background: '#FFFFFF',
-  surface: '#F5F5F7',
-  surfaceAlt: '#EBEBF0',
-  elevated: '#FFFFFF',
-  card: '#FFFFFF',
+  background: '#f8fafc',
+  surface: '#ffffff',
+  surfaceAlt: '#f1f5f9',
+  elevated: '#ffffff',
+  card: '#ffffff',
 
-  // Primary (Signature #FF8008)
-  primary: '#FF8008',
-  primaryLight: '#FFA852',
-  primaryDark: '#CC6606',
-  primaryBg: 'rgba(255,128,8,0.1)',
+  // Primary (Signature #e7620c)
+  primary: '#e7620c',
+  primaryLight: '#f0853e',
+  primaryDark: '#c4530a',
+  primaryBg: 'rgba(231,98,12,0.1)',
 
   // Success
-  success: '#00D9A6',
-  successLight: '#34E8BE',
-  successBg: 'rgba(0,217,166,0.1)',
+  success: '#10b981',
+  successLight: '#34d399',
+  successBg: 'rgba(16,185,129,0.1)',
 
   // Warning
-  warning: '#FFB74D',
-  warningBg: 'rgba(255,183,77,0.1)',
+  warning: '#f59e0b',
+  warningBg: 'rgba(245,158,11,0.1)',
 
   // Info
-  info: '#6C9FFF',
-  infoBg: 'rgba(108,159,255,0.1)',
+  info: '#3b82f6',
+  infoBg: 'rgba(59,130,246,0.1)',
 
   // Danger
-  danger: '#EF4444',
+  danger: '#ef4444',
   dangerBg: 'rgba(239,68,68,0.1)',
 
   // Text
-  text: '#0A0A0F',
-  textSecondary: '#5A5A6E',
-  textTertiary: '#8E8EA0',
-  textInverse: '#FFFFFF',
+  text: '#020617',
+  textSecondary: '#64748b',
+  textTertiary: '#94a3b8',
+  textInverse: '#f8fafc',
 
   // Border
-  border: 'rgba(0,0,0,0.06)',
-  borderAccent: 'rgba(255,128,8,0.3)',
+  border: 'rgba(0,0,0,0.08)',
+  borderAccent: 'rgba(231,98,12,0.3)',
 
   // Misc
   white: '#FFFFFF',
   black: '#000000',
   overlay: 'rgba(0,0,0,0.6)',
-  star: '#FFB74D',
+  star: '#f59e0b',
 
   // Gradient pairs
-  gradientPrimary: ['#FF8008', '#FFB152'] as [string, string],
-  gradientSuccess: ['#00D9A6', '#22D3EE'] as [string, string],
-  gradientDark: ['#F5F5F7', '#EBEBF0'] as [string, string],
+  gradientPrimary: ['#e7620c', '#f0853e'] as [string, string],
+  gradientSuccess: ['#10b981', '#34d399'] as [string, string],
+  gradientDark: ['#f1f5f9', '#e2e8f0'] as [string, string],
 };
 
 export const DarkColors = {
   // Backgrounds
-  background: '#0A0A0F',
-  surface: '#14141F',
-  surfaceAlt: '#1A1A2E',
-  elevated: '#1E1E30',
-  card: '#16162A',
+  background: '#0a0a0a',
+  surface: '#111111',
+  surfaceAlt: '#141414',
+  elevated: '#141414',
+  card: '#111111',
 
-  // Primary (Signature #FF8008)
-  primary: '#FF8008',
-  primaryLight: '#FFA852',
-  primaryDark: '#CC6606',
-  primaryBg: 'rgba(255,128,8,0.1)',
+  // Primary (Signature #e7620c)
+  primary: '#e7620c',
+  primaryLight: '#f0853e',
+  primaryDark: '#c4530a',
+  primaryBg: 'rgba(231,98,12,0.1)',
 
   // Success
-  success: '#00D9A6',
-  successLight: '#34E8BE',
-  successBg: 'rgba(0,217,166,0.1)',
+  success: '#10b981',
+  successLight: '#34d399',
+  successBg: 'rgba(16,185,129,0.1)',
 
   // Warning
-  warning: '#FFB74D',
-  warningBg: 'rgba(255,183,77,0.1)',
+  warning: '#f59e0b',
+  warningBg: 'rgba(245,158,11,0.1)',
 
   // Info
   info: '#6C9FFF',
@@ -86,25 +86,25 @@ export const DarkColors = {
   dangerBg: 'rgba(239,68,68,0.1)',
 
   // Text
-  text: '#F0F0F5',
-  textSecondary: '#8E8EA0',
-  textTertiary: '#5A5A6E',
-  textInverse: '#0A0A0F',
+  text: '#f8fafc',
+  textSecondary: '#a1a1aa',
+  textTertiary: '#71717a',
+  textInverse: '#0a0a0a',
 
   // Border
-  border: 'rgba(255,255,255,0.06)',
-  borderAccent: 'rgba(255,128,8,0.3)',
+  border: 'rgba(255,255,255,0.08)',
+  borderAccent: 'rgba(231,98,12,0.3)',
 
   // Misc
   white: '#FFFFFF',
   black: '#000000',
   overlay: 'rgba(0,0,0,0.6)',
-  star: '#FFB74D',
+  star: '#f59e0b',
 
   // Gradient pairs
-  gradientPrimary: ['#FF8008', '#FFB152'] as [string, string],
-  gradientSuccess: ['#00D9A6', '#22D3EE'] as [string, string],
-  gradientDark: ['#14141F', '#0A0A0F'] as [string, string],
+  gradientPrimary: ['#e7620c', '#f0853e'] as [string, string],
+  gradientSuccess: ['#10b981', '#34d399'] as [string, string],
+  gradientDark: ['#111111', '#0a0a0a'] as [string, string],
 };
 
 export type ThemeColors = typeof LightColors;
@@ -152,16 +152,16 @@ export const FontWeight = {
 export const Shadows = {
   card: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   subtle: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
 };

@@ -5,29 +5,29 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #FFFFFF;
-  --surface: #F5F5F7;
-  --surface-alt: #EBEBF0;
-  --foreground: #0A0A0F;
-  --foreground-muted: #5A5A6E;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-alt: #f1f5f9;
+  --foreground: #020617;
+  --foreground-muted: #64748b;
   
-  --primary: #FF8008;
+  --primary: #e7620c;
   --primary-foreground: #FFFFFF;
   
-  --border: rgba(0, 0, 0, 0.06);
+  --border: rgba(0, 0, 0, 0.08);
 }
 
 .dark {
-  --background: #0A0A0F;
-  --surface: #14141F;
-  --surface-alt: #1A1A2E;
-  --foreground: #F0F0F5;
-  --foreground-muted: #8E8EA0;
+  --background: #0a0a0a;
+  --surface: #111111;
+  --surface-alt: #141414;
+  --foreground: #f8fafc;
+  --foreground-muted: #a1a1aa;
   
-  --primary: #FF8008;
+  --primary: #e7620c;
   --primary-foreground: #FFFFFF;
   
-  --border: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
@@ -47,5 +47,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
