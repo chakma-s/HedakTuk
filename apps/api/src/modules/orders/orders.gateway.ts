@@ -49,8 +49,6 @@ export class OrdersGateway implements OnGatewayConnection, OnGatewayDisconnect {
         });
     }
 
-    // ---- Emit Methods (called by OrdersService) ----
-
     notifyOrderStatusUpdate(orderId: string, status: OrderStatus) {
         this.server.to(`order:${orderId}`).emit(SocketEvent.ORDER_STATUS_UPDATED, {
             orderId,

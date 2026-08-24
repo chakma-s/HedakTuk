@@ -33,10 +33,11 @@ model User {
 
   addresses         Address[]
   orders            Order[]
-  deliveryOrders    Order[]      @relation("DeliveryPartner")
+  deliveryOrders    Order[]         @relation("DeliveryPartner")
   reviews           Review[]
   restaurants       Restaurant[]
   cart              Cart?
+  driverEarnings    DriverEarning[] @relation("DriverEarnings")
 
   @@map("users")
 }
@@ -76,6 +77,8 @@ model Restaurant {
   deliveryFee            Float   @default(0) @map("delivery_fee")
   isActive               Boolean @default(true) @map("is_active")
   isOpen                 Boolean @default(true) @map("is_open")
+  prepTimeMinutes        Int     @default(0) @map("prep_time_minutes")
+  commissionRate         Float   @default(0) @map("commission_rate")
   operatingHours         Json?   @map("operating_hours")
   createdAt              DateTime @default(now()) @map("created_at")
   updatedAt              DateTime @updatedAt @map("updated_at")
@@ -190,6 +193,7 @@ model Order {
   items           OrderItem[]
   payment         Payment?
   review          Review?
+  driverEarning   DriverEarning?
 
   @@index([userId])
   @@index([restaurantId])
@@ -284,4 +288,36 @@ model Review {
 
   @@index([restaurantId])
   @@map("reviews")
+}
+
+// ---- Driver Earnings ----
+
+model DriverEarning {
+  id              String   @id @default(uuid()) @db.Uuid
+  driverId        String   @map("driver_id") @db.Uuid
+  orderId         String   @unique @map("order_id") @db.Uuid
+  deliveryFee     Float    @map("delivery_fee")
+  tip             Float    @default(0)
+  bonus           Float    @default(0)
+  totalEarning    Float    @map("total_earning")
+  paidOut         Boolean  @default(false) @map("paid_out")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  driver User  @relation("DriverEarnings", fields: [driverId], references: [id])
+  order  Order @relation(fields: [orderId], references: [id])
+
+  @@index([driverId])
+  @@index([createdAt])
+  @@map("driver_earnings")
+}
+
+// ---- Platform Settings ----
+
+model PlatformSetting {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String   @unique @db.VarChar(100)
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("platform_settings")
 }

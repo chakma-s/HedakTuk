@@ -292,3 +292,23 @@ export interface DeliveryLocationPayload {
     longitude: number;
     updatedAt: string;
 }
+
+// New additions for Logistics and Finance phases
+export interface DriverEarning {
+    id: string;
+    driverId: string;
+    orderId: string;
+    deliveryFee: number;
+    tip: number;
+    bonus: number;
+    totalEarning: number;
+    paidOut: boolean;
+    createdAt: string;
+}
+
+export interface FinanceSummary {
+    totalRevenue: number;
+    totalCommissions: number;
+    pendingPayouts: number;
+    totalPaid: number;
+}

@@ -155,4 +155,11 @@ export class RestaurantsService {
             data: { isActive },
         });
     }
+
+    async updateCommissionRate(id: string, commissionRate: number) {
+        return this.prisma.restaurant.update({
+            where: { id },
+            data: { commissionRate },
+        });
+    }
 }

@@ -1,38 +1,30 @@
 import { create } from 'zustand';
 
-export type RiderStatus = 'offline' | 'online' | 'on_trip';
-
-export interface DeliveryOrder {
-  id: string;
-  restaurantName: string;
-  restaurantAddress: string;
-  customerName: string;
-  customerAddress: string;
-  earning: number;
-  status: 'pending' | 'going_to_pickup' | 'picked_up' | 'going_to_dropoff' | 'delivered';
-}
-
 interface DeliveryState {
-  status: RiderStatus;
-  activeOrder: DeliveryOrder | null;
+  isOnline: boolean;
+  status: 'IDLE' | 'PICKING_UP' | 'OUT_FOR_DELIVERY';
+  activeOrder: any | null;
   todayEarnings: number;
-  todayTrips: number;
-  setStatus: (status: RiderStatus) => void;
-  setActiveOrder: (order: DeliveryOrder | null) => void;
-  completeOrder: () => void;
+  thisWeekEarnings: number;
+  toggleOnline: () => void;
+  setStatus: (status: 'IDLE' | 'PICKING_UP' | 'OUT_FOR_DELIVERY') => void;
+  setActiveOrder: (order: any | null) => void;
+  fetchEarnings: () => Promise<void>;
 }
 
 export const useDeliveryStore = create<DeliveryState>((set) => ({
-  status: 'offline',
+  isOnline: false,
+  status: 'IDLE',
   activeOrder: null,
   todayEarnings: 0,
-  todayTrips: 0,
+  thisWeekEarnings: 0,
+
+  toggleOnline: () => set((state) => ({ isOnline: !state.isOnline })),
   setStatus: (status) => set({ status }),
-  setActiveOrder: (order) => set({ activeOrder: order, status: order ? 'on_trip' : 'online' }),
-  completeOrder: () => set((state) => ({
-    activeOrder: null,
-    status: 'online',
-    todayEarnings: state.todayEarnings + (state.activeOrder?.earning || 0),
-    todayTrips: state.todayTrips + 1,
-  })),
+  setActiveOrder: (order) => set({ activeOrder: order }),
+  
+  fetchEarnings: async () => {
+    // API mock logic for now
+    set({ todayEarnings: 850, thisWeekEarnings: 4200 });
+  },
 }));

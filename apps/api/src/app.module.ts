@@ -13,6 +13,8 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { HealthModule } from './modules/health/health.module';
+import { DispatchModule } from './modules/dispatch/dispatch.module';
+import { EarningsModule } from './modules/earnings/earnings.module';
 
 @Module({
     imports: [
@@ -42,6 +44,8 @@ import { HealthModule } from './modules/health/health.module';
         PaymentsModule,
         NotificationsModule,
         HealthModule,
+        DispatchModule,
+        EarningsModule,
     ],
     providers: [
         // Apply rate limiting globally

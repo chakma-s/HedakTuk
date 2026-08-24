@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Patch, Param, Query, Body, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard, Roles } from '../../common/guards/roles.guard';
 import { RestaurantsService } from './restaurants.service';
+import { UserRole } from '@hedaktuk/shared-types';
 
 @ApiTags('restaurants')
 @Controller('restaurants')
@@ -9,22 +11,11 @@ export class RestaurantsController {
     constructor(private readonly restaurantsService: RestaurantsService) { }
 
     @Get()
-    @ApiOperation({ summary: 'List restaurants with filters' })
-    @ApiQuery({ name: 'search', required: false })
-    @ApiQuery({ name: 'cuisine', required: false })
-    @ApiQuery({ name: 'page', required: false })
-    @ApiQuery({ name: 'limit', required: false })
-    findAll(
-        @Query('search') search?: string,
-        @Query('cuisine') cuisine?: string,
-        @Query('page') page?: number,
-        @Query('limit') limit?: number,
-    ) {
+    findAll(@Query('search') search?: string, @Query('cuisine') cuisine?: string, @Query('page') page?: number, @Query('limit') limit?: number) {
         return this.restaurantsService.findAll({ search, cuisine, page, limit });
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'Get restaurant details with full menu' })
     findById(@Param('id') id: string) {
         return this.restaurantsService.findById(id);
     }
@@ -32,7 +23,6 @@ export class RestaurantsController {
     @Post()
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
-    @ApiOperation({ summary: 'Create a new restaurant (restaurant owner)' })
     create(@Req() req: any, @Body() body: any) {
         return this.restaurantsService.create(req.user.id, body);
     }
@@ -40,25 +30,24 @@ export class RestaurantsController {
     @Patch(':id')
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
-    @ApiOperation({ summary: 'Update restaurant details (owner only)' })
     update(@Req() req: any, @Param('id') id: string, @Body() body: any) {
         return this.restaurantsService.update(id, req.user.id, body);
     }
 
-    // ---- Admin Endpoints ----
+    @Patch(':id/commission')
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    updateCommissionRate(@Param('id') id: string, @Body() body: { commissionRate: number }) {
+        return this.restaurantsService.updateCommissionRate(id, body.commissionRate);
+    }
 
     @Get('admin/all')
-    @ApiOperation({ summary: 'Get all restaurants for admin' })
-    findAllAdmin(
-        @Query('search') search?: string,
-        @Query('page') page?: number,
-        @Query('limit') limit?: number,
-    ) {
+    findAllAdmin(@Query('search') search?: string, @Query('page') page?: number, @Query('limit') limit?: number) {
         return this.restaurantsService.findAllAdmin({ search, page, limit });
     }
 
     @Patch(':id/status')
-    @ApiOperation({ summary: 'Update restaurant status (Admin)' })
     updateStatus(@Param('id') id: string, @Body() body: { isActive: boolean }) {
         return this.restaurantsService.updateStatus(id, body.isActive);
     }
