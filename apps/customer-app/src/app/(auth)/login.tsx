@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/stores/themeStore';
 import { FontSize, FontWeight, Radius, Spacing } from '@/constants/theme';
 import { fetchAPI } from '@/api';
@@ -11,6 +12,7 @@ import { fetchAPI } from '@/api';
 export default function LoginScreen() {
   const Colors = useTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +62,7 @@ export default function LoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <View style={styles.content}>
+        <View style={[styles.content, { paddingTop: Math.max(insets.top, Spacing.xl) + Spacing.xl }]}>
           <View style={styles.header}>
             <Text style={styles.logoText}>HedakTuk</Text>
             <Text style={styles.tagline}>Premium food delivery, reimagined.</Text>
@@ -92,6 +94,7 @@ export default function LoginScreen() {
             </View>
 
             <TouchableOpacity 
+              activeOpacity={0.8}
               style={[styles.continueButton, { backgroundColor: Colors.primary }, isLoading && styles.buttonDisabled]} 
               onPress={handleSendOtp}
               disabled={isLoading}

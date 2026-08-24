@@ -76,6 +76,7 @@ export default function DeliveryDashboard() {
         <Text style={styles.statusText}>{status === 'offline' ? "YOU'RE OFFLINE" : "YOU'RE ONLINE"}</Text>
         
         <TouchableOpacity 
+          activeOpacity={0.8}
           style={[styles.toggleBtn, { backgroundColor: status === 'offline' ? Colors.primary : Colors.danger }]}
           onPress={toggleStatus}
         >

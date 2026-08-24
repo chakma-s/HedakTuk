@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCartStore } from '@/stores/cartStore';
 import { Spacing, Radius, FontSize, FontWeight, Shadows } from '@/constants/theme';
 import { useTheme } from '@/stores/themeStore';;
@@ -10,14 +11,25 @@ export default function CartBar() {
   const Colors = useTheme();
   const styles = createStyles(Colors);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const itemCount = useCartStore((state) => state.getItemCount());
   const subtotal = useCartStore((state) => state.getSubtotal());
   const restaurantName = useCartStore((state) => state.restaurantName);
 
   if (itemCount === 0) return null;
 
+  // The tab bar is usually 65px + bottom inset
+  const bottomPosition = 65 + Math.max(insets.bottom, 10) + 15;
+
   return (
-    <Pressable style={styles.container} onPress={() => router.push('/cart')}>
+    <Pressable 
+      style={({ pressed }) => [
+        styles.container, 
+        { bottom: bottomPosition },
+        pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 }
+      ]} 
+      onPress={() => router.push('/cart')}
+    >
       <View style={styles.content}>
         <View style={styles.leftInfo}>
           <Text style={styles.itemCountText}>
@@ -45,7 +57,6 @@ export default function CartBar() {
 const createStyles = (Colors: any) => StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 80, // Slightly above the 65px tab bar
     left: Spacing.lg,
     right: Spacing.lg,
     backgroundColor: Colors.primary,
