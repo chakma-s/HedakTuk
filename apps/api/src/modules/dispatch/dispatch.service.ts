@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { RedisService } from '../../common/redis/redis.service';
 import { OrdersGateway } from '../orders/orders.gateway';
 import { OrdersService } from '../orders/orders.service';
@@ -8,6 +8,7 @@ export class DispatchService {
     constructor(
         private readonly redisService: RedisService,
         private readonly ordersGateway: OrdersGateway,
+        @Inject(forwardRef(() => OrdersService))
         private readonly ordersService: OrdersService,
     ) {}
 

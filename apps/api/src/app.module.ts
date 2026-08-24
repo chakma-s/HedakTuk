@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
+import { BullModule } from '@nestjs/bullmq';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RestaurantsModule } from './modules/restaurants/restaurants.module';
@@ -33,6 +34,7 @@ import { EarningsModule } from './modules/earnings/earnings.module';
         // Core services
         PrismaModule,
         RedisModule,
+        BullModule.forRoot({ connection: { host: 'localhost', port: 6379, password: 'redis_dev_2026' } }),
 
         // Feature modules
         AuthModule,
